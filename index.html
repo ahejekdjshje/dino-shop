@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>DinoBite | Корм для любимых динозавров</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&family=Rubik:wght@500;700;800;900&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['"Rubik"', 'sans-serif'],
+          },
+          colors: {
+            jungle: {
+              800: '#113527',
+              900: '#0a2319',
+              950: '#05140e'
+            },
+            amberPrime: {
+              400: '#fbbf24',
+              500: '#f59e0b',
+              600: '#d97706'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Custom bounce & bite animations */
+    @keyframes chew {
+      0%, 100% { transform: scale(1) rotate(0deg); }
+      30% { transform: scale(1.15) rotate(-6deg); }
+      60% { transform: scale(0.9) rotate(4deg); }
+    }
+    .animate-chew {
+      animation: chew 0.5s ease-in-out;
+    }
+    @keyframes heartFloat {
+      0% { opacity: 1; transform: translateY(0) scale(0.8); }
+      100% { opacity: 0; transform: translateY(-50px) scale(1.3); }
+    }
+    .floating-heart {
+      animation: heartFloat 1s forwards ease-out;
+    }
+    /* Hide scrollbars smoothly */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="bg-[#0c1813] text-emerald-50 font-sans min-h-screen selection:bg-amber-500 selection:text-black pb-28">
+
+  <header class="sticky top-0 z-40 bg-[#0a2319]/90 backdrop-blur-md border-b border-emerald-900/40 px-4 py-3 shadow-lg">
+    <div class="max-w-6xl mx-auto flex items-center justify-between">
+      
+      <!-- Logo -->
+      <div class="flex items-center gap-2.5 cursor-pointer" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-500 to-emerald-500 flex items-center justify-center text-2xl shadow-inner shadow-black/30">
+          🦖
+        </div>
+        <div>
+          <span class="font-display font-black text-xl tracking-wide bg-gradient-to-r from-amber-400 via-amber-200 to-emerald-400 bg-clip-text text-transparent">
+            DinoBite
+          </span>
+          <span class="block text-[10px] uppercase font-bold tracking-widest text-emerald-400/80 -mt-1">Юрский маркет</span>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="flex items-center gap-2">
+        <button onclick="scrollToCalculator()" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-900/60 border border-emerald-700/40 text-xs font-bold text-emerald-300 hover:bg-emerald-800 transition">
+          ⚖️ Калькулятор порции
+        </button>
+
+        <!-- Cart Button -->
+        <button id="cartBtn" onclick="toggleCartModal(true)" class="relative flex items-center gap-2 px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold transition shadow-md shadow-amber-500/20 active:scale-95">
+          <span class="text-lg">🥩</span>
+          <span class="text-sm font-extrabold hidden xs:inline">Корзина</span>
+          <span id="cartCountBadge" class="w-5 h-5 bg-red-600 text-white rounded-full text-xs font-black flex items-center justify-center shadow">0</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 pt-4 sm:pt-6">
+
+    <section class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-900/80 via-[#103023] to-[#071912] border border-emerald-600/30 p-5 sm:p-8 mb-8 shadow-2xl">
+      <!-- Background Ambient Glow -->
+      <div class="absolute -top-16 -right-16 w-60 h-60 bg-amber-500/15 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -bottom-16 -left-16 w-60 h-60 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div class="text-center md:text-left space-y-3 max-w-xl">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold">
+            <span>🔥 100% Натуральный мезозойский состав</span>
+          </div>
+          <h1 class="font-display text-3xl sm:text-4xl md:text-5xl font-black text-white leading-tight">
+            Премиум-питание для вашего <span class="text-amber-400 underline decoration-wavy decoration-emerald-500">Динозавра</span>
+          </h1>
+          <p class="text-emerald-200/80 text-sm sm:text-base">
+            От сочного мамонтового белка для грозного Т-Рекса до папоротниковых букетов для нежного диплодока. Доставка по воздуху птеродактилями!
+          </p>
+          <div class="pt-2 flex flex-wrap gap-2.5 justify-center md:justify-start">
+            <a href="#catalog" class="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-stone-950 font-black text-sm transition shadow-lg shadow-emerald-500/25 active:scale-95">
+              Выбрать корм
+            </a>
+            <button onclick="feedMascot()" class="px-4 py-2.5 rounded-xl bg-emerald-950/80 border border-emerald-700/50 hover:border-amber-400 text-amber-300 font-bold text-sm transition flex items-center gap-2 active:scale-95">
+              <span>🍗</span> Угостить маскота
+            </button>
+          </div>
+        </div>
+
+        <!-- Interactive Dino Mascot -->
+        <div class="relative flex flex-col items-center">
+          <div id="mascotBubble" class="absolute -top-10 bg-emerald-950/90 border border-amber-400/50 text-amber-300 text-xs font-black px-3 py-1 rounded-full shadow-lg transition-all duration-300 opacity-90 scale-100">
+            Покорми меня! 👇
+          </div>
+          <div id="mascotDino" onclick="feedMascot()" class="cursor-pointer select-none relative w-32 h-32 sm:w-40 sm:h-40 rounded-full bg-emerald-950/70 border-4 border-amber-500/40 flex items-center justify-center text-7xl sm:text-8xl shadow-2xl transition-transform active:scale-90 hover:scale-105">
+            🦖
+          </div>
+          <span class="text-[11px] font-bold text-emerald-400/80 mt-2">Рексик (сытость: <span id="mascotHunger">75</span>%)</span>
+          <div class="w-32 bg-emerald-950 rounded-full h-2 mt-1 overflow-hidden border border-emerald-800">
+            <div id="mascotBar" class="bg-amber-400 h-full w-3/4 transition-all duration-300"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="dinoCalculator" class="mb-10 rounded-2xl bg-emerald-950/40 border border-emerald-800/40 p-5 sm:p-6 backdrop-blur-sm">
+      <div class="flex items-center gap-2 mb-4">
+        <span class="text-2xl">⚖️</span>
+        <div>
+          <h2 class="font-display font-extrabold text-xl text-white">Калькулятор суточного рациона</h2>
+          <p class="text-xs text-emerald-300/70">Рассчитайте точную порцию под породу и вес питомца</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
+        <div>
+          <label class="block text-xs font-bold text-emerald-300 mb-1.5">Питомец:</label>
+          <select id="calcDinoType" class="w-full bg-[#081b13] border border-emerald-700/60 rounded-xl px-3 py-2.5 text-sm text-emerald-100 font-medium focus:outline-none focus:border-amber-400">
+            <option value="carnivore">Тираннозавр Рекс (Хищник)</option>
+            <option value="herbivore">Брахиозавр / Диплодок (Травоядный)</option>
+            <option value="raptor">Велоцираптор (Ловкий хищник)</option>
+            <option value="ceratops">Трицератопс (Травоядный броненосец)</option>
+            <option value="ptero">Птеродактиль (Рыбоядный летун)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-emerald-300 mb-1.5">Вес питомца (в тоннах):</label>
+          <div class="relative">
+            <input type="number" id="calcWeight" value="7" min="0.1" max="80" step="0.5" class="w-full bg-[#081b13] border border-emerald-700/60 rounded-xl px-3 py-2.5 text-sm text-emerald-100 font-medium focus:outline-none focus:border-amber-400">
+            <span class="absolute right-3 top-2.5 text-xs text-emerald-400/60 font-bold">тонн</span>
+          </div>
+        </div>
+
+        <button onclick="calculateDiet()" class="w-full py-2.5 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-black text-sm transition shadow active:scale-95">
+          Рассчитать норму
+        </button>
+      </div>
+
+      <!-- Result Card -->
+      <div id="calcResult" class="mt-4 p-4 rounded-xl bg-emerald-900/40 border border-emerald-700/30 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm">
+        <div class="text-center sm:text-left">
+          <span class="text-xs text-emerald-300/80 uppercase font-bold tracking-wider">Суточная норма:</span>
+          <div class="text-lg font-black text-amber-300" id="calcResultText">🥩 Примерно 210 кг мясных стейков в день</div>
+        </div>
+        <button id="calcRecommendBtn" onclick="filterByCalculatedDiet('carnivore')" class="px-3.5 py-1.5 rounded-lg bg-emerald-800/80 hover:bg-emerald-700 text-emerald-200 text-xs font-bold border border-emerald-600/40 transition">
+          Показать подходящий корм
+        </button>
+      </div>
+    </section>
+
+    <section id="catalog" class="mb-6">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="font-display font-extrabold text-2xl text-white">Каталог меню</h2>
+        <span class="text-xs text-emerald-400/70 font-semibold" id="catalogCount">6 позиций</span>
+      </div>
+
+      <!-- Filter Chips -->
+      <div class="flex gap-2 overflow-x-auto no-scrollbar pb-2">
+        <button onclick="filterProducts('all')" data-category="all" class="filter-btn active whitespace-nowrap px-4 py-2 rounded-xl text-xs font-extrabold transition bg-amber-500 text-stone-950 shadow">
+          🦕 Все рационы
+        </button>
+        <button onclick="filterProducts('carnivore')" data-category="carnivore" class="filter-btn whitespace-nowrap px-4 py-2 rounded-xl text-xs font-extrabold transition bg-emerald-950/80 border border-emerald-800/70 text-emerald-300 hover:bg-emerald-900">
+          🥩 Для Хищников
+        </button>
+        <button onclick="filterProducts('herbivore')" data-category="herbivore" class="filter-btn whitespace-nowrap px-4 py-2 rounded-xl text-xs font-extrabold transition bg-emerald-950/80 border border-emerald-800/70 text-emerald-300 hover:bg-emerald-900">
+          🌿 Для Травоядных
+        </button>
+        <button onclick="filterProducts('aquatic')" data-category="aquatic" class="filter-btn whitespace-nowrap px-4 py-2 rounded-xl text-xs font-extrabold transition bg-emerald-950/80 border border-emerald-800/70 text-emerald-300 hover:bg-emerald-900">
+          🐟 Рыбное меню
+        </button>
+        <button onclick="filterProducts('treats')" data-category="treats" class="filter-btn whitespace-nowrap px-4 py-2 rounded-xl text-xs font-extrabold transition bg-emerald-950/80 border border-emerald-800/70 text-emerald-300 hover:bg-emerald-900">
+          🦴 Лакомства & Зубы
+        </button>
+      </div>
+    </section>
+
+    <div id="productsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      <!-- Injected via JavaScript -->
+    </div>
+
+  </main>
+
+  <div id="cartModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden flex justify-end transition-opacity duration-300">
+    <div class="w-full max-w-md bg-[#0a2319] h-full flex flex-col border-l border-emerald-800/50 shadow-2xl">
+      
+      <!-- Cart Header -->
+      <div class="p-4 border-b border-emerald-900 flex items-center justify-between bg-emerald-950/40">
+        <div class="flex items-center gap-2">
+          <span class="text-xl">🥩</span>
+          <h3 class="font-display font-black text-lg text-white">Корзина дино-заказа</h3>
+        </div>
+        <button onclick="toggleCartModal(false)" class="w-8 h-8 rounded-lg bg-emerald-900/60 text-emerald-300 hover:bg-emerald-800 flex items-center justify-center font-bold">
+          ✕
+        </button>
+      </div>
+
+      <!-- Items List -->
+      <div id="cartItemsContainer" class="flex-1 overflow-y-auto p-4 space-y-3">
+        <!-- Rendered items or empty state -->
+      </div>
+
+      <!-- Cart Footer / Summary -->
+      <div class="p-4 border-t border-emerald-900/70 bg-[#081c14] space-y-3">
+        <!-- Promo code input -->
+        <div class="flex gap-2">
+          <input type="text" id="promoInput" placeholder="Промокод (JURASSIC10)" class="flex-1 bg-emerald-950/80 border border-emerald-800 text-xs px-3 py-2 rounded-xl text-emerald-100 placeholder:text-emerald-600 focus:outline-none focus:border-amber-400 uppercase font-bold">
+          <button onclick="applyPromoCode()" class="px-3 py-2 bg-emerald-800/80 hover:bg-emerald-700 text-xs font-extrabold text-amber-300 rounded-xl transition border border-emerald-700">
+            Применить
+          </button>
+        </div>
+        <div id="promoMessage" class="text-[11px] font-bold text-amber-400 hidden"></div>
+
+        <!-- Delivery option -->
+        <div>
+          <label class="block text-[11px] font-bold text-emerald-400/80 mb-1">Способ доставки:</label>
+          <select id="deliverySelect" onchange="updateCartTotals()" class="w-full bg-emerald-950/80 border border-emerald-800 rounded-xl px-2.5 py-1.5 text-xs text-emerald-200 font-semibold focus:outline-none">
+            <option value="ptero" data-cost="500">🦅 Экспресс-птеродактиль (30 мин) — 500 ₽</option>
+            <option value="diplo" data-cost="200">🦕 Тяжеловоз-диплодок (2 часа) — 200 ₽</option>
+            <option value="free" data-cost="0">🏕️ Самовывоз из гнезда — 0 ₽</option>
+          </select>
+        </div>
+
+        <!-- Price Breakdown -->
+        <div class="space-y-1 text-xs pt-2 border-t border-emerald-900/50">
+          <div class="flex justify-between text-emerald-300/80">
+            <span>Сумма товаров:</span>
+            <span id="subtotalPrice">0 ₽</span>
+          </div>
+          <div class="flex justify-between text-emerald-300/80">
+            <span>Скидка:</span>
+            <span id="discountPrice" class="text-amber-400">-0 ₽</span>
+          </div>
+          <div class="flex justify-between text-emerald-300/80">
+            <span>Доставка:</span>
+            <span id="deliveryPrice">500 ₽</span>
+          </div>
+          <div class="flex justify-between text-base font-black text-white pt-1">
+            <span>ИТОГО:</span>
+            <span id="totalPrice" class="text-amber-400">0 ₽</span>
+          </div>
+        </div>
+
+        <!-- Checkout Button -->
+        <button onclick="openCheckoutModal()" id="checkoutBtn" class="w-full py-3 bg-amber-500 hover:bg-amber-400 text-stone-950 font-black rounded-xl transition shadow-lg shadow-amber-500/20 active:scale-95">
+          Оформить заказ
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <div id="checkoutModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div class="w-full max-w-sm bg-[#0d271c] border border-amber-500/40 rounded-3xl p-6 text-center shadow-2xl space-y-4">
+      <div class="text-5xl">📦🦖</div>
+      <h3 class="font-display font-black text-xl text-white">Заказ корма оформлен!</h3>
+      <p class="text-xs text-emerald-200/80" id="orderSuccessText">
+        Стая птеродактилей уже вылетела с вашим сочным грузом. Проверьте вольер перед посадкой курьера!
+      </p>
+      <div class="p-3 bg-emerald-950/70 rounded-2xl border border-emerald-800 text-left text-xs space-y-1">
+        <div class="text-emerald-400 font-bold">Номер заказа: #DINO-<span id="orderId">8472</span></div>
+        <div class="text-emerald-200">Оплата: костями или картой курьеру</div>
+      </div>
+      <button onclick="closeCheckoutSuccess()" class="w-full py-2.5 bg-emerald-500 hover:bg-emerald-400 text-stone-950 font-black rounded-xl transition">
+        Отлично, ждём!
+      </button>
+    </div>
+  </div>
+
+  <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 bg-emerald-950 border border-amber-400 text-white text-xs font-bold px-4 py-2.5 rounded-2xl shadow-xl flex items-center gap-2 transition-all duration-300 opacity-0 pointer-events-none translate-y-3">
+    <span id="toastIcon">✨</span>
+    <span id="toastMsg">Товар добавлен</span>
+  </div>
+
+  <script>
+    /* Catalog Data */
+    const PRODUCTS = [
+      {
+        id: 'mammoth-steak',
+        name: 'Стейк из мамонта Extra',
+        category: 'carnivore',
+        desc: 'Выдержанный отборный белок глубокой заморозки. Для мощных челюстей и энергии хищника.',
+        suit: 'Для Ти-Рексов, Аллозавров',
+        pack: 'Мешок 50 кг',
+        price: 3400,
+        badge: 'Хит сезона 🔥',
+        emoji: '🥩',
+        rating: 4.9,
+        reviews: 142
+      },
+      {
+        id: 'fern-mix',
+        name: 'Юрский папоротниковый микс',
+        category: 'herbivore',
+        desc: 'Свежескошенные древние саговники, хвощи и папоротники с калием и магнием для пищеварения.',
+        suit: 'Для Брахиозавров, Трицератопсов',
+        pack: 'Сноп 80 кг',
+        price: 1800,
+        badge: 'Органик 🌿',
+        emoji: '🌿',
+        rating: 4.8,
+        reviews: 95
+      },
+      {
+        id: 'dragonfly-crunch',
+        name: 'Хрустящие стрекозы мезозоя',
+        category: 'treats',
+        desc: 'Сушеные реликтовые стрекозы меганевры с размахом крыльев до 70 см. Хрустящее лакомство.',
+        suit: 'Для Велоцирапторов, Компсогнатов',
+        pack: 'Ведро 10 кг',
+        price: 2100,
+        badge: 'Деликатес 🦗',
+        emoji: '🦗',
+        rating: 5.0,
+        reviews: 210
+      },
+      {
+        id: 'calcium-boulders',
+        name: 'Кальциевые булыжники с водорослями',
+        category: 'treats',
+        desc: 'Минеральные глыбы для укрепления броневых пластин, рогов и хвостовых шипов.',
+        suit: 'Для Анкилозавров, Стегозавров',
+        pack: 'Блок 120 кг',
+        price: 2600,
+        badge: 'Для брони 🛡️',
+        emoji: '🪨',
+        rating: 4.7,
+        reviews: 64
+      },
+      {
+        id: 'mega-fish-block',
+        name: 'Мега-рыбный брикет',
+        category: 'aquatic',
+        desc: 'Прессованный планктон и гигантские юрские целаканты. Богат омега-3 для блеска чешуи.',
+        suit: 'Для Мозазавров, Ихтиозавров',
+        pack: 'Брикет 100 кг',
+        price: 4200,
+        badge: 'Глубоководный 🐟',
+        emoji: '🐟',
+        rating: 4.9,
+        reviews: 83
+      },
+      {
+        id: 'volcano-chew-sticks',
+        name: 'Вулканические палочки для зубов',
+        category: 'treats',
+        desc: 'Окаменелое дерево с пеплом для счищения налета с клыков длиной до 30 сантиметров.',
+        suit: 'Для любых зубастых гигантов',
+        pack: 'Связка 20 шт',
+        price: 1500,
+        badge: 'Гигиена 🦷',
+        emoji: '🪵',
+        rating: 4.6,
+        reviews: 118
+      }
+    ];
+
+    /* App State */
+    let cart = {};
+    let currentFilter = 'all';
+    let discountRate = 0;
+    let mascotHunger = 75;
+
+    function renderProducts(filter = 'all') {
+      const container = document.getElementById('productsGrid');
+      const filtered = filter === 'all' 
+        ? PRODUCTS 
+        : PRODUCTS.filter(p => p.category === filter);
+
+      document.getElementById('catalogCount').innerText = `${filtered.length} позиций`;
+
+      container.innerHTML = filtered.map(item => {
+        const qtyInCart = cart[item.id] || 0;
+
+        return `
+          <div class="bg-gradient-to-b from-emerald-950/60 to-[#071912] rounded-3xl border border-emerald-800/40 p-4 sm:p-5 flex flex-col justify-between hover:border-emerald-600/60 transition group hover:shadow-xl hover:shadow-emerald-950/50">
+            <div>
+              <!-- Badge & Visual -->
+              <div class="flex items-start justify-between gap-2 mb-3">
+                <span class="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                  ${item.badge}
+                </span>
+                <span class="text-xs text-emerald-400 font-bold flex items-center gap-1">
+                  ⭐ ${item.rating} <span class="text-emerald-600">(${item.reviews})</span>
+                </span>
+              </div>
+
+              <!-- Product Emoji Canvas -->
+              <div class="w-full h-32 rounded-2xl bg-emerald-900/30 flex items-center justify-center text-6xl group-hover:scale-105 transition-transform duration-300 border border-emerald-800/20 mb-3 select-none">
+                ${item.emoji}
+              </div>
+
+              <!-- Title & Desc -->
+              <h3 class="font-display font-extrabold text-lg text-white group-hover:text-amber-300 transition-colors">
+                ${item.name}
+              </h3>
+              <p class="text-xs text-emerald-400/90 font-semibold mt-1">🎯 ${item.suit}</p>
+              <p class="text-xs text-emerald-200/70 mt-2 line-clamp-2 leading-relaxed">
+                ${item.desc}
+              </p>
+            </div>
+
+            <!-- Footer Card: Weight, Price & Action -->
+            <div class="mt-4 pt-3 border-t border-emerald-900/60">
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-[11px] font-bold text-emerald-500 uppercase tracking-wide">Фасовка: ${item.pack}</span>
+                <span class="text-lg font-black text-amber-400">${item.price} ₽</span>
+              </div>
+
+              ${qtyInCart === 0 ? `
+                <button onclick="addToCart('${item.id}')" class="w-full py-2.5 rounded-xl bg-emerald-700/60 hover:bg-emerald-600 text-white font-extrabold text-xs flex items-center justify-center gap-1.5 transition active:scale-95 border border-emerald-600/40">
+                  <span>В корзину 🥩</span>
+                </button>
+              ` : `
+                <div class="flex items-center justify-between bg-emerald-900/80 border border-amber-500/40 rounded-xl p-1">
+                  <button onclick="decreaseCart('${item.id}')" class="w-8 h-8 rounded-lg bg-emerald-950 text-amber-400 font-black hover:bg-emerald-800 flex items-center justify-center active:scale-90">-</button>
+                  <span class="font-black text-sm text-white px-2">${qtyInCart} шт</span>
+                  <button onclick="addToCart('${item.id}')" class="w-8 h-8 rounded-lg bg-amber-500 text-stone-950 font-black hover:bg-amber-400 flex items-center justify-center active:scale-90">+</button>
+                </div>
+              `}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function addToCart(productId) {
+      cart[productId] = (cart[productId] || 0) + 1;
+      updateCartUI();
+      renderProducts(currentFilter);
+      showToast('Добавлено в запасы кормушки! 🦖');
+    }
+
+    function decreaseCart(productId) {
+      if (!cart[productId]) return;
+      cart[productId] -= 1;
+      if (cart[productId] <= 0) {
+        delete cart[productId];
+      }
+      updateCartUI();
+      renderProducts(currentFilter);
+    }
+
+    function removeEntirely(productId) {
+      delete cart[productId];
+      updateCartUI();
+      renderProducts(currentFilter);
+    }
+
+    function updateCartUI() {
+      // Badge count
+      const totalCount = Object.values(cart).reduce((a, b) => a + b, 0);
+      document.getElementById('cartCountBadge').innerText = totalCount;
+
+      // Render cart items inside modal
+      const container = document.getElementById('cartItemsContainer');
+      const itemKeys = Object.keys(cart);
+
+      if (itemKeys.length === 0) {
+        container.innerHTML = `
+          <div class="h-64 flex flex-col items-center justify-center text-center text-emerald-400/60">
+            <span class="text-5xl mb-2">🦕</span>
+            <p class="font-bold text-sm">Кормушка пуста!</p>
+            <p class="text-xs text-emerald-600 mt-1">Добавьте мясо, папоротники или лакомства</p>
+          </div>
+        `;
+      } else {
+        container.innerHTML = itemKeys.map(id => {
+          const product = PRODUCTS.find(p => p.id === id);
+          if (!product) return '';
+          const qty = cart[id];
+          return `
+            <div class="flex items-center justify-between p-3 rounded-2xl bg-emerald-950/70 border border-emerald-800/40 gap-2">
+              <div class="text-3xl select-none">${product.emoji}</div>
+              <div class="flex-1 min-w-0">
+                <h4 class="font-bold text-xs text-white truncate">${product.name}</h4>
+                <div class="text-[11px] text-amber-400 font-extrabold">${product.price * qty} ₽ <span class="text-emerald-500 font-normal">(${product.price} ₽/шт)</span></div>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <button onclick="decreaseCart('${id}')" class="w-6 h-6 rounded-md bg-emerald-900 hover:bg-emerald-800 text-amber-300 font-bold flex items-center justify-center text-xs">-</button>
+                <span class="text-xs font-black text-white px-1">${qty}</span>
+                <button onclick="addToCart('${id}')" class="w-6 h-6 rounded-md bg-amber-500 text-stone-950 font-bold flex items-center justify-center text-xs">+</button>
+                <button onclick="removeEntirely('${id}')" class="w-6 h-6 rounded-md bg-red-950/60 hover:bg-red-800 text-red-300 font-bold flex items-center justify-center text-xs ml-1">✕</button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      updateCartTotals();
+    }
+
+    function updateCartTotals() {
+      let subtotal = 0;
+      for (const [id, qty] of Object.entries(cart)) {
+        const prod = PRODUCTS.find(p => p.id === id);
+        if (prod) subtotal += prod.price * qty;
+      }
+
+      const deliverySelect = document.getElementById('deliverySelect');
+      const deliveryCost = subtotal > 0 ? parseInt(deliverySelect.options[deliverySelect.selectedIndex].getAttribute('data-cost')) : 0;
+      const discount = Math.round(subtotal * discountRate);
+      const total = Math.max(0, subtotal - discount + deliveryCost);
+
+      document.getElementById('subtotalPrice').innerText = `${subtotal} ₽`;
+      document.getElementById('discountPrice').innerText = `-${discount} ₽`;
+      document.getElementById('deliveryPrice').innerText = `${deliveryCost} ₽`;
+      document.getElementById('totalPrice').innerText = `${total} ₽`;
+
+      const checkoutBtn = document.getElementById('checkoutBtn');
+      if (subtotal === 0) {
+        checkoutBtn.disabled = true;
+        checkoutBtn.classList.add('opacity-50', 'pointer-events-none');
+      } else {
+        checkoutBtn.disabled = false;
+        checkoutBtn.classList.remove('opacity-50', 'pointer-events-none');
+      }
+    }
+
+    function toggleCartModal(show) {
+      const modal = document.getElementById('cartModal');
+      if (show) {
+        modal.classList.remove('hidden');
+        updateCartUI();
+      } else {
+        modal.classList.add('hidden');
+      }
+    }
+
+    function applyPromoCode() {
+      const code = document.getElementById('promoInput').value.trim().toUpperCase();
+      const msg = document.getElementById('promoMessage');
+      msg.classList.remove('hidden');
+
+      if (code === 'JURASSIC10' || code === 'DINO10') {
+        discountRate = 0.10;
+        msg.className = 'text-[11px] font-bold text-amber-400 block';
+        msg.innerText = '✅ Скидка 10% на весь рацион активирована!';
+        showToast('Промокод применен: -10%');
+      } else if (code === 'METEOR50') {
+        discountRate = 0.50;
+        msg.className = 'text-[11px] font-bold text-amber-400 block';
+        msg.innerText = '☄️ Метеоритная мега-скидка 50%!';
+        showToast('Суперскидка 50%!');
+      } else {
+        discountRate = 0;
+        msg.className = 'text-[11px] font-bold text-red-400 block';
+        msg.innerText = 'Неверный промокод. Попробуйте JURASSIC10';
+      }
+      updateCartTotals();
+    }
+
+    function openCheckoutModal() {
+      document.getElementById('orderId').innerText = Math.floor(1000 + Math.random() * 9000);
+      document.getElementById('checkoutModal').classList.remove('hidden');
+      toggleCartModal(false);
+    }
+
+    function closeCheckoutSuccess() {
+      document.getElementById('checkoutModal').classList.add('hidden');
+      cart = {};
+      updateCartUI();
+      renderProducts(currentFilter);
+      showToast('Спасибо за заказ! Берегите зубы питомца 🦖');
+    }
+
+    function filterProducts(category) {
+      currentFilter = category;
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        if (btn.getAttribute('data-category') === category) {
+          btn.className = 'filter-btn active whitespace-nowrap px-4 py-2 rounded-xl text-xs font-extrabold transition bg-amber-500 text-stone-950 shadow';
+        } else {
+          btn.className = 'filter-btn whitespace-nowrap px-4 py-2 rounded-xl text-xs font-extrabold transition bg-emerald-950/80 border border-emerald-800/70 text-emerald-300 hover:bg-emerald-900';
+        }
+      });
+      renderProducts(category);
+    }
+
+    function scrollToCalculator() {
+      document.getElementById('dinoCalculator').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function calculateDiet() {
+      const type = document.getElementById('calcDinoType').value;
+      const weight = parseFloat(document.getElementById('calcWeight').value) || 1;
+      const resText = document.getElementById('calcResultText');
+      const recBtn = document.getElementById('calcRecommendBtn');
+
+      let dailyKg = 0;
+      let targetCat = 'carnivore';
+
+      if (type === 'carnivore') {
+        // approx 3% - 4% bodyweight for active T-Rex
+        dailyKg = Math.round(weight * 1000 * 0.035);
+        resText.innerText = `🥩 ~${dailyKg} кг отборного мяса и костей в сутки`;
+        recBtn.setAttribute('onclick', "filterByCalculatedDiet('carnivore')");
+        recBtn.innerText = 'Показать мясные стейки';
+      } else if (type === 'herbivore') {
+        // approx 5% - 7% bodyweight in plants
+        dailyKg = Math.round(weight * 1000 * 0.06);
+        resText.innerText = `🌿 ~${dailyKg} кг папоротников, хвощей и шишек в сутки`;
+        recBtn.setAttribute('onclick', "filterByCalculatedDiet('herbivore')");
+        recBtn.innerText = 'Показать папоротниковый микс';
+      } else if (type === 'raptor') {
+        dailyKg = Math.round(weight * 1000 * 0.05);
+        resText.innerText = `🦗 ~${dailyKg} кг питательных стрекоз и свежей дичи в сутки`;
+        recBtn.setAttribute('onclick', "filterByCalculatedDiet('treats')");
+        recBtn.innerText = 'Показать стрекоз и снеки';
+      } else if (type === 'ceratops') {
+        dailyKg = Math.round(weight * 1000 * 0.045);
+        resText.innerText = `🪨 ~${dailyKg} кг жестких побегов и минералов для рогов`;
+        recBtn.setAttribute('onclick', "filterByCalculatedDiet('treats')");
+        recBtn.innerText = 'Показать минеральные блоки';
+      } else {
+        dailyKg = Math.round(weight * 1000 * 0.04);
+        resText.innerText = `🐟 ~${dailyKg} кг свежей реликтовой рыбы в сутки`;
+        recBtn.setAttribute('onclick', "filterByCalculatedDiet('aquatic')");
+        recBtn.innerText = 'Показать рыбный брикет';
+      }
+    }
+
+    function filterByCalculatedDiet(cat) {
+      filterProducts(cat);
+      document.getElementById('catalog').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function feedMascot() {
+      const dino = document.getElementById('mascotDino');
+      const bubble = document.getElementById('mascotBubble');
+      const bar = document.getElementById('mascotBar');
+      const hungerTxt = document.getElementById('mascotHunger');
+
+      dino.classList.add('animate-chew');
+      setTimeout(() => dino.classList.remove('animate-chew'), 500);
+
+      mascotHunger = Math.min(100, mascotHunger + 10);
+      hungerTxt.innerText = mascotHunger;
+      bar.style.width = mascotHunger + '%';
+
+      const phrases = ['Ням-ням! 🍖', 'Хруст! Вкусно! 🦖', 'Ещё хочу! 😋', 'Ррр-мяу! 💚'];
+      bubble.innerText = phrases[Math.floor(Math.random() * phrases.length)];
+
+      showToast('Рексик доволен угощением! (+10% сытости)');
+    }
+
+    /* Toast Helper */
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toastMsg');
+      toastMsg.innerText = message;
+      toast.classList.remove('opacity-0', 'translate-y-3', 'pointer-events-none');
+      toast.classList.add('opacity-100', 'translate-y-0');
+
+      clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-3', 'pointer-events-none');
+        toast.classList.remove('opacity-100', 'translate-y-0');
+      }, 2400);
+    }
+
+    /* Initial Load */
+    window.onload = function() {
+      renderProducts('all');
+      calculateDiet();
+    };
+  </script>
+</body>
+</html>
